@@ -1,6 +1,6 @@
 Quadrocopter trajectory generator 
 
-Mark W. Mueller (mwm@mwm.im)
+Mark W. Mueller (mwm@ethz.ch)
 
 This contains source code implementing a method for rapidly generating 
 trajectories for quadrocopters. The two folders give implementations for both
