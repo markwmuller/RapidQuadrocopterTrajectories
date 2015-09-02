@@ -47,7 +47,7 @@ public:
 		}
 		//we're doing something wrong if we get here
 		assert(0);
-		return z;
+		return std::numeric_limits<double>::quiet_NaN();
 	}
 
 	//!Setter function, index 0 <-> x, 1 <-> y, 2 <-> z
@@ -62,7 +62,9 @@ public:
 		}
 		//we're doing something wrong if we get here
 		assert(0);
-		return z;
+		//fail loudly:
+		x = y = z = std::numeric_limits<double>::quiet_NaN();
+		return x;
 	}
 
 	//!Calculate the dot product of two vectors

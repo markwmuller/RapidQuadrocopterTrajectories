@@ -186,7 +186,7 @@ RapidTrajectoryGenerator::StateFeasibilityResult RapidTrajectoryGenerator::Check
     rootCount = magnet::math::cubicSolve(c[2] / c[1], c[3] / c[1], c[4] / c[1], roots[2], roots[3], roots[4]);
   }
 
-	for(int i=0; i<(rootCount+2); i++)
+	for(unsigned i=0; i<(rootCount+2); i++)
 	{
 	  //don't evaluate points outside the domain
 	  if(roots[i] < 0) continue;

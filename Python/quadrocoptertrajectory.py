@@ -320,7 +320,7 @@ class RapidTrajectory:
     """
 
     def __init__(self, pos0, vel0, acc0, gravity):
-        """Initialise the trajectory
+        """Initialise the trajectory.
 
         Initialise the trajectory with the initial quadrocopter state, and the
         orientation of gravity for this problem.
@@ -406,7 +406,7 @@ class RapidTrajectory:
         """ Calculate a trajectory of duration `timeToGo`.
 
         Calculates a trajectory of duration `timeToGo`, with the problem data
-        defined so far. If something (e.g. goal position) hasn't been defined,
+        defined so far. If something (e.g. goal position) has not been defined,
         it is assumed to be left free. 
 
         """
