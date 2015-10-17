@@ -24,7 +24,7 @@ namespace RapidQuadrocopterTrajectoryGenerator
 
 //! An axis along one spatial direction
 /*!
- * For more information, please refer to Section II of the publication !TODO!
+ * For more information, please refer to Section II of the publication.
  */
 class SingleAxisTrajectory
 {

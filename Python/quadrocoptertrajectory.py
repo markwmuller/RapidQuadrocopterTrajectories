@@ -43,7 +43,7 @@ LICENSE
     
 VERSION 
 
-    0.0
+    0.1
 
 """
 
@@ -143,11 +143,10 @@ class SingleAxisTrajectory:
             self._a = self._b = self._g = 0
 
         #Calculate the cost:
-        self._cost =  ((self._g**2) + self._b*self._g*Tf + (self._b**2)*T2/3.0 + self._a*self._g*T2/3.0 + self._a*self._b*T3/4.0 + (self._a**2)*T4)/20.0
+        self._cost =  (self._g**2) + self._b*self._g*Tf + (self._b**2)*T2/3.0 + self._a*self._g*T2/3.0 + self._a*self._b*T3/4.0 + (self._a**2)*T4/20.0
                 
     def reset(self):
         """Reset the trajectory parameters."""
-        #TODO: Other reset stuff:
         self._cost = float("inf")
         self._accGoalDefined = self._velGoalDefined = self._posGoalDefined = False
         self._accPeakTimes = [None,None]
@@ -312,7 +311,9 @@ class RapidTrajectory:
     combinations of states along the trajectory remain within some bounds can
     also be tested efficiently.
 
-    For more information, please see the publication !TODO!
+		For more information, please see the publication 'A computationally 
+		efficient motion primitive for quadrocopter trajectory generation', 
+		avaialable here: http://www.mwm.im/research/publications/
 
     NOTE: in the publication, axes are 1-indexed, while here they are
     zero-indexed.

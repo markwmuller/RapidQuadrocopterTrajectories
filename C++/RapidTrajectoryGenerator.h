@@ -44,7 +44,7 @@ namespace RapidQuadrocopterTrajectoryGenerator
  * combinations of states along the trajectory remain within some bounds can
  * also be tested efficiently.
  *
- * For more information, please see the publication !TODO!
+ * For more information, please see the publication `A computationally efficient motion primitive for quadrocopter trajectory generation', avaible here: http://www.mwm.im/research/publications/
  *
  * NOTE: in the publication, axes are 1-indexed, while here they are
  * zero-indexed.
@@ -108,7 +108,7 @@ public:
    * The user must also specify a minimumTimeSection, which then determines the
    * precision of tests (and thus limit the number of recursion steps).
    *
-   * Refer to the paper !TODO! for a full discussion on these tests.
+   * Refer to the paper for a full discussion on these tests.
    *
    * Note that if the result is not feasible, the result is that of the first
    * section which tested infeasible/indeterminate.

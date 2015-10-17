@@ -116,7 +116,7 @@ void SingleAxisTrajectory::GenerateTrajectory(const double Tf)
   }
 
   //Calculate the cost:
-  _cost =  (_g*_g + _b*_g*Tf + _b*_b*T2/3.0 + _a*_g*T2/3.0 + _a*_b*T3/4.0 + _a*_a*T4)/20.0;
+  _cost =  _g*_g + _b*_g*Tf + _b*_b*T2/3.0 + _a*_g*T2/3.0 + _a*_b*T3/4.0 + _a*_a*T4/20.0;
 }
 
 /*!
