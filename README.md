@@ -14,7 +14,7 @@ M.W. Mueller, M. Hehn, and R. D'Andrea, "A computationally efficient motion prim
 
 The paper may be downloaded [here][paperLink].
 
-[paperLink]: http://www.mwm.im/research/publications
+[paperLink]: http://muellerlab.berkeley.edu/publications/
 
 Quickstart
 ----------
