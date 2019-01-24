@@ -554,9 +554,9 @@ class RapidTrajectory:
 
         for i in range(3):
             coeffs[0] += boundaryNormal[i]*self._axis[i].get_param_alpha()/24.0            # t**4
-            coeffs[1] += boundaryNormal[i]*self._axis[i].get_param_beta() /6.0              # t**3
+            coeffs[1] += boundaryNormal[i]*self._axis[i].get_param_beta() /6.0             # t**3
             coeffs[2] += boundaryNormal[i]*self._axis[i].get_param_gamma()/2.0             # t**2
-            coeffs[3] += boundaryNormal[i]*self._axis[i].get_initial_acceleration()/6.0    # t
+            coeffs[3] += boundaryNormal[i]*self._axis[i].get_initial_acceleration()        # t
             coeffs[4] += boundaryNormal[i]*self._axis[i].get_initial_velocity()            # 1
         
         #calculate the roots
