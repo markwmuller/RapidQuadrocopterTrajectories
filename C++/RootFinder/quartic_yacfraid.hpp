@@ -58,16 +58,6 @@ namespace magnet {
       n4[0] = 0;
 
 
-      asq = a*a;
-      acu = a*asq;
-      b4 = b*4.0;
-      n3 = 0;
-
-      P = asq*b - b4*b + 2.0*a*c + 16.0*d ;
-      Q = asq*c - b4*c + 8.0*a*d;
-      R = asq*d - c*c ;
-      U = acu - b4*a + 8.0*c;
-      n4[0] = 0;
       if (U == 0.0)
 	{
 	  if (P == 0.0)
