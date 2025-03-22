@@ -276,9 +276,9 @@ class InputFeasibilityResult:
 class StateFeasibilityResult:
     """An enumeration of the possible outcomes for the state feasiblity test.
 
-    The result is either feasible (0), or infeasible (1).
+    The result is either feasible (0), infeasible (1), or indeterminable (3).
     """
-    Feasible, Infeasible = range(2)
+    Feasible, Infeasible, Indeterminable = range(3)
     
     @classmethod
     def to_string(cls,ifr):
@@ -287,6 +287,8 @@ class StateFeasibilityResult:
             return "Feasible"
         elif ifr==StateFeasibilityResult.Infeasible:
             return "Infeasible"
+        elif ifr==StateFeasibilityResult.Indeterminable:
+            return "Indeterminable"
         return "Unknown"
             
 
@@ -560,7 +562,16 @@ class RapidTrajectory:
             coeffs[4] += boundaryNormal[i]*self._axis[i].get_initial_velocity()            # 1
         
         #calculate the roots
-        tRoots = np.roots(coeffs)
+        tRootsComplex = np.roots(coeffs)
+        tRoots = []
+        for r in tRootsComplex:
+            if not np.isreal(r):
+                continue
+            if r < 0:
+                continue
+            if r > self._tf: 
+                continue
+            tRoots += [r]
         
         #test these times, and the initial & end times:
         for t in np.append(tRoots,[0,self._tf]):
@@ -570,6 +581,119 @@ class RapidTrajectory:
         
         #all points tested feasible:
         return StateFeasibilityResult.Feasible
+         
+
+    def _test_position_in_sphere(self, sphereCenter, sphereRadius, t):
+        return np.linalg.norm(sphereCenter-self.get_position(t)) <= sphereRadius
+
+
+    def _check_collision_free_sphere_section(self, sphereCenter, sphereRadius, minTimeSection, ts, tf):
+        """Recursive test used by `check_collision_free_sphere`.
+
+        Algorithm 1 of "Rapid Collision Detection for Multicopter Trajectories"
+             Nathan Bucki and Mark W. Mueller
+
+        Returns:
+            An enumeration, of type InputFeasibilityResult.
+
+        """
+
+        t_split = 0.5*(ts+tf)
+
+        if self._test_position_in_sphere(sphereCenter, sphereRadius, t_split):
+            return StateFeasibilityResult.Infeasible
+
+        if tf-ts < minTimeSection:
+            return StateFeasibilityResult.Indeterminable
+
+        #Find plane separating x(t_split ) and obstacle    
+        x_split = self.get_position(t_split)
+        v = x_split - sphereCenter 
+        boundaryNormal = (1/np.linalg.norm(v))*v #make unit vector
+        boundaryPoint = sphereCenter + sphereRadius*boundaryNormal
+        
+        coeffs = np.zeros(5)
+        for i in range(3):
+            coeffs[0] += boundaryNormal[i]*self._axis[i].get_param_alpha()/24.0            # t**4
+            coeffs[1] += boundaryNormal[i]*self._axis[i].get_param_beta() /6.0             # t**3
+            coeffs[2] += boundaryNormal[i]*self._axis[i].get_param_gamma()/2.0             # t**2
+            coeffs[3] += boundaryNormal[i]*self._axis[i].get_initial_acceleration()        # t
+            coeffs[4] += boundaryNormal[i]*self._axis[i].get_initial_velocity()            # 1
+        
+        #calculate the roots
+        tRootsComplex = np.roots(coeffs)
+        tRoots = [ts, tf]
+        for r in tRootsComplex:
+            if not np.isreal(r):
+                continue
+            r = np.real(r)
+            if r < ts:
+                continue
+            if r > tf: 
+                continue
+            tRoots += [r]
+
+        tRoots = np.sort(tRoots)
+        tRootsAfter = np.append([t_split], tRoots[tRoots > t_split])
+        for i,ti in enumerate(tRootsAfter):
+            if ti == t_split:
+                #skip
+                continue
+
+            xi = self.get_position(ti)
+            if (xi-boundaryPoint)@boundaryNormal < 0:
+                # on obstacle side of plane
+                result = self._check_collision_free_sphere_section(sphereCenter, sphereRadius, minTimeSection, tRootsAfter[i-1], tf)
+                if result == StateFeasibilityResult.Feasible:
+                    break
+                return result
+
+
+        tRootsBefore = np.append([t_split], tRoots[tRoots < t_split])
+        tRootsBefore = - np.sort(-tRootsBefore) #sort descending
+        for i,ti in enumerate(tRootsBefore):
+            if ti == t_split:
+                #skip first
+                continue
+
+            xi = self.get_position(ti)
+            if (xi-boundaryPoint)@boundaryNormal < 0:
+                # on obstacle side of plane
+                return self._check_collision_free_sphere_section(sphereCenter, sphereRadius, minTimeSection, ts, tRootsBefore[i-1])
+        
+        #all points tested feasible:
+        return StateFeasibilityResult.Feasible
+
+    def check_collision_free_sphere(self, sphereCenter, sphereRadius, minTimeSection):
+        """Test whether the position trajectory is allowable w.r.t. a spherical obstacle
+
+        Test whether the position trajectory is collision-free w.r.t. a 
+        spherical obstacle, using method of this paper: 
+        https://arxiv.org/abs/1904.04223
+
+        The result is of the class StateFeasibilityResult, either Feasible or
+        Infeasible.
+
+        Args:
+            sphereCenter (array(3)): the position of the obstacle's center
+            sphereRadius (float): the radius of the obstacle
+
+        Returns:
+            An enumeration, of type StateFeasibilityResult.
+
+        """
+
+        sphereCenter = np.array(sphereCenter)
+        sphereRadius  = float(sphereRadius)
+
+        if self._test_position_in_sphere(sphereCenter, sphereRadius, 0):
+            return StateFeasibilityResult.Infeasible
+
+        if self._test_position_in_sphere(sphereCenter, sphereRadius, self._tf):
+            return StateFeasibilityResult.Infeasible
+
+        return self._check_collision_free_sphere_section(sphereCenter, sphereRadius, minTimeSection, 0, self._tf)
+
 
     def get_jerk(self, t):
         """ Return the trajectory's 3D jerk value at time `t`."""
