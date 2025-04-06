@@ -23,6 +23,38 @@ If you'd just quickly like to see something running, run the file
 This will make a plot, visualising a trajectory. You can then change the 
 trajectory parameters, and see how this affects things.
 
+### Docker Setup
+
+If your operating system doesn't support environment of this project, docker is a great alternative.
+
+First of all, you have to build the project and create an  image like so:
+
+```bash
+## Assuimg you are in the correct project directory
+docker build -t rapidqt .
+```
+To use a shortcut, you may use the following command:
+
+```bash
+## Assuimg you are in the correct project directory
+make docker_build
+```
+
+
+After the image is created, copy and paste the following command to the terminal to run the image:
+
+```bash
+## Assuimg you are in the correct project directory
+xhost +
+docker run -it --network host   --env="DISPLAY" --env="QT_X11_NO_MITSHM=1" --device=/dev/video0:/dev/video0 --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" --entrypoint /bin/bash rapidqt
+```
+> **_NOTE:_**  You only have to run xhost + once each time you log into the machine. These settings persist per login session.
+To use a shortcut, you may use following command:
+
+```bash
+make docker_run
+```
+
 Licensing
 ---------
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.  
